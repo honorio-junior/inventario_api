@@ -1,35 +1,65 @@
 import sqlite3
-import os
+import pathlib
 from typing import List, Dict
 
-DATABASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database.sqlite')
+DATABASE = pathlib.Path(__file__).parent / 'database.sqlite'
 
-def get_connection():
-    return sqlite3.connect(DATABASE)
+class DatabaseAPI:
+    def __init__(self):
+        self.connection = sqlite3.connect(DATABASE)
+        self.connection.row_factory = sqlite3.Row
 
-def fetch_all(query: str, params: tuple = ()) -> List[Dict]:
-    try:
-        with get_connection() as conn:
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-            cursor.execute(query, params)
-            return [dict(row) for row in cursor.fetchall()]
-    except sqlite3.Error as e:
-        print(f"Database error: {e}")
-        return []
+    def close_connection(self):
+        self.connection.close()
 
-def get_categorias() -> List[Dict]:
-    return fetch_all('SELECT * FROM categoria')
+    def get_categorias(self) -> List[Dict]:
+        cursor = self.connection.cursor()
+        result = cursor.execute('SELECT * FROM categoria').fetchall()
+        self.close_connection()
+        return [dict(row) for row in result]
+    
+    def get_estoques(self) -> List[Dict]:
+        cursor = self.connection.cursor()
+        result = cursor.execute('SELECT * FROM estoque').fetchall()
+        self.close_connection()
+        return [dict(row) for row in result]
+    
+    def get_produtos(self, id_estoque: int) -> List[Dict]:
+        cursor = self.connection.cursor()
+        result = cursor.execute('SELECT * FROM produto WHERE id_estoque = ?', (id_estoque,)).fetchall()
+        self.close_connection()
+        return [dict(row) for row in result]
+    
+    def create_estoque(self, data: str) -> int:
+        cursor = self.connection.cursor()
+        estoque_id = cursor.execute('INSERT INTO estoque (data) VALUES (?)', (data,)).lastrowid
+        self.connection.commit()
+        self.close_connection()
+        return estoque_id
+    
+    def create_categoria(self, nome: str) -> int:
+        cursor = self.connection.cursor()
+        categoria_id = cursor.execute('INSERT INTO categoria (nome) VALUES (?)', (nome,)).lastrowid
+        self.connection.commit()
+        self.close_connection()
+        return categoria_id
+    
+    def create_produto(self, id_estoque: int, id_categoria: int, nome: str, quantidade: int, preco_compra: float) -> int:
+        cursor = self.connection.cursor()
 
-def get_estoques() -> List[Dict]:
-    return fetch_all('SELECT * FROM estoque')
+        # Verificar se o id_estoque existe
+        cursor.execute('SELECT id FROM estoque WHERE id = ?', (id_estoque,))
+        if cursor.fetchone() is None:
+            return {'error': True, 'message': 'O id_estoque informado não existe'}
 
-def get_produtos(estoque_id: int) -> List[Dict]:
-    return fetch_all('SELECT * FROM produto WHERE id_estoque = ?', (estoque_id,))
-
+        cursor.execute('INSERT INTO produto (id_estoque, id_categoria, nome, quantidade, preco_compra) VALUES (?, ?, ?, ?, ?)', (id_estoque, id_categoria, nome, quantidade, preco_compra))
+        self.connection.commit()
+        self.close_connection()
+        return cursor.lastrowid
 
 
 if __name__ == '__main__':
+
     query = """
 CREATE TABLE IF NOT EXISTS estoque (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,12 +81,12 @@ CREATE TABLE IF NOT EXISTS produto (
 )
 """
     try:
-        with get_connection() as conn:
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-            cursor.executescript(query)
-            conn.commit()
-            print("Tabelas criadas com sucesso")
+        connection = sqlite3.connect(DATABASE)
+        cursor = connection.cursor()
+        cursor.executescript(query)
+        connection.commit()
+        connection.close()
+        print("Banco de dados criadas com sucesso")
     except sqlite3.Error as e:
         print(f"Database error: {e}")
 
