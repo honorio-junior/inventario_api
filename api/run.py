@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import FastAPI
 
-from database import get_categorias, get_estoques, get_produtos
+from database import DatabaseAPI
 from schemas import *
 
 
@@ -14,20 +14,37 @@ def read_root():
 
 @app.get('/get-categorias', response_model=List[EsquemaCategoria])
 def read_categorias():
-    categorias = get_categorias()
+    db = DatabaseAPI()
+    categorias = db.get_categorias()
     return categorias
 
 @app.get('/get-estoques', response_model=List[EsquemaEstoque])
 def read_estoques():
-    estoques = get_estoques()
+    db = DatabaseAPI()
+    estoques = db.get_estoques()
     return estoques
 
 @app.get('/get-produtos/{estoque_id}', response_model=List[EsquemaProduto])
 def read_produtos(estoque_id: int = 0):
-    produtos = get_produtos(estoque_id)
+    db = DatabaseAPI()
+    produtos = db.get_produtos(estoque_id)
     return produtos
 
-# @app.put('/items/{item_id}')
-# def update_item(item_id: int, item: Item):
-#     return {'item_name': item.name, 'item_id': item_id}
+@app.post('/create-categoria')
+def post_categoria(categoria: EsquemaCategoria):
+    db = DatabaseAPI()
+    id = db.create_categoria(categoria.nome)
+    return id
 
+
+@app.post('/create-estoque')
+def post_estoque(estoque: EsquemaEstoque):
+    db = DatabaseAPI()
+    id = db.create_estoque(estoque.data)
+    return id
+
+@app.post('/create-produto')
+def post_estoque(produto: EsquemaProduto):
+    db = DatabaseAPI()
+    id = db.create_produto(produto.id_estoque, produto.id_categoria, produto.nome, produto.quantidade, produto.preco_compra)
+    return id
