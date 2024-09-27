@@ -52,6 +52,11 @@ class DatabaseAPI:
         if cursor.fetchone() is None:
             return {'error': True, 'message': 'O id_estoque informado não existe'}
 
+        # Verificar se o id_categoria existe
+        cursor.execute('SELECT id FROM categoria WHERE id = ?', (id_categoria,))
+        if cursor.fetchone() is None:
+            return {'error': True, 'message': 'O id_categoria informado não existe'}
+
         cursor.execute('INSERT INTO produto (id_estoque, id_categoria, nome, quantidade, preco_compra) VALUES (?, ?, ?, ?, ?)', (id_estoque, id_categoria, nome, quantidade, preco_compra))
         self.connection.commit()
         self.close_connection()
