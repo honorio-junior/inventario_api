@@ -8,6 +8,7 @@ class DatabaseAPI:
     def __init__(self):
         self.connection = sqlite3.connect(DATABASE)
         self.connection.row_factory = sqlite3.Row
+        self.connection.execute('PRAGMA foreign_keys = ON')
 
     def close_connection(self):
         self.connection.close()
@@ -47,17 +48,11 @@ class DatabaseAPI:
     def create_produto(self, id_estoque: int, id_categoria: int, nome: str, quantidade: int, preco_compra: float) -> int:
         cursor = self.connection.cursor()
 
-        # Verificar se o id_estoque existe
-        cursor.execute('SELECT id FROM estoque WHERE id = ?', (id_estoque,))
-        if cursor.fetchone() is None:
-            return {'error': True, 'message': 'O id_estoque informado não existe'}
-
-        # Verificar se o id_categoria existe
-        cursor.execute('SELECT id FROM categoria WHERE id = ?', (id_categoria,))
-        if cursor.fetchone() is None:
-            return {'error': True, 'message': 'O id_categoria informado não existe'}
-
-        cursor.execute('INSERT INTO produto (id_estoque, id_categoria, nome, quantidade, preco_compra) VALUES (?, ?, ?, ?, ?)', (id_estoque, id_categoria, nome, quantidade, preco_compra))
+        try:
+            cursor.execute('INSERT INTO produto (id_estoque, id_categoria, nome, quantidade, preco_compra) VALUES (?, ?, ?, ?, ?)', (id_estoque, id_categoria, nome, quantidade, preco_compra))
+        except sqlite3.Error as e:
+            self.close_connection()
+            return {e}
         self.connection.commit()
         self.close_connection()
         return cursor.lastrowid
@@ -81,8 +76,8 @@ CREATE TABLE IF NOT EXISTS produto (
     nome TEXT NOT NULL,
     quantidade INTEGER NOT NULL,
     preco_compra REAL NOT NULL,
-    FOREIGN KEY(id_estoque) REFERENCES estoque(id),
-    FOREIGN KEY(id_categoria) REFERENCES categoria(id)
+    FOREIGN KEY(id_estoque) REFERENCES estoque(id) ON DELETE RESTRICT,
+    FOREIGN KEY(id_categoria) REFERENCES categoria(id) ON DELETE RESTRICT
 )
 """
     try:
