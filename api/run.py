@@ -10,7 +10,7 @@ app = FastAPI()
 
 @app.get('/')
 def read_root():
-    return {'status_server': 1, 'message': 'API online'}
+    return {'url_docs': '127.0.0.1:8000/docs'}
 
 @app.get('/get-categorias', response_model=List[EsquemaCategoria])
 def read_categorias():
