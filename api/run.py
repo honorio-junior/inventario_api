@@ -48,3 +48,21 @@ def post_estoque(produto: EsquemaProduto):
     db = DatabaseAPI()
     id = db.create_produto(produto.id_estoque, produto.id_categoria, produto.nome, produto.quantidade, produto.preco_compra)
     return id
+
+@app.delete('/delete-categoria/{id}')
+def delete_categoria(id: int):
+    db = DatabaseAPI()
+    result = db.delete_categoria(id)
+    return result
+
+@app.delete('/delete-estoque/{id}')
+def delete_estoque(id: int):
+    db = DatabaseAPI()
+    result = db.delete_estoque(id)
+    return result
+
+@app.delete('/delete-produto/{id}')
+def delete_produto(id: int):
+    db = DatabaseAPI()
+    result = db.delete_produto(id)
+    return result

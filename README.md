@@ -15,9 +15,9 @@ Uma API para gerenciar categorias, estoques e produtos em python, usando FastAPI
 - Criar categorias de produtos
 - Criar estoques de produtos
 - Criar produtos em um estoque específico
-- ~~Apagar estoque~~
-- ~~Apagar produtos de um estoque específico~~
-- ~~Apagar categoria~~
+- Apagar estoque
+- Apagar produtos de um estoque específico
+- Apagar categoria
 - ~~Atualizar produto~~
 - ~~Atualizar categoria~~
 

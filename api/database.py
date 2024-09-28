@@ -57,6 +57,39 @@ class DatabaseAPI:
         self.close_connection()
         return cursor.lastrowid
 
+    def delete_categoria(self, id: int) -> bool:
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute('DELETE FROM categoria WHERE id = ?', (id,))
+            self.connection.commit()
+        except sqlite3.Error as e:
+            self.close_connection()
+            return {e}
+        self.close_connection()
+        return True
+    
+    def delete_estoque(self, id: int) -> bool:
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute('DELETE FROM estoque WHERE id = ?', (id,))
+            self.connection.commit()
+        except sqlite3.Error as e:
+            self.close_connection()
+            return {e}
+        self.close_connection()
+        return True
+    
+    def delete_produto(self, id: int) -> bool:
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute('DELETE FROM produto WHERE id = ?', (id,))
+            self.connection.commit()
+        except sqlite3.Error as e:
+            self.close_connection()
+            return {e}
+        self.close_connection()
+        return True
+
 
 if __name__ == '__main__':
 
