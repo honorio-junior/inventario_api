@@ -33,21 +33,28 @@ class DatabaseAPI:
     
     def create_estoque(self, data: str) -> int:
         cursor = self.connection.cursor()
-        estoque_id = cursor.execute('INSERT INTO estoque (data) VALUES (?)', (data,)).lastrowid
+        try:
+            estoque_id = cursor.execute('INSERT INTO estoque (data) VALUES (?)', (data,)).lastrowid
+        except sqlite3.Error as e:
+            self.close_connection() 
+            return {e}
         self.connection.commit()
         self.close_connection()
         return estoque_id
     
     def create_categoria(self, nome: str) -> int:
         cursor = self.connection.cursor()
-        categoria_id = cursor.execute('INSERT INTO categoria (nome) VALUES (?)', (nome,)).lastrowid
+        try:
+            categoria_id = cursor.execute('INSERT INTO categoria (nome) VALUES (?)', (nome,)).lastrowid
+        except sqlite3.Error as e:
+            self.close_connection()
+            return {e}
         self.connection.commit()
         self.close_connection()
         return categoria_id
     
     def create_produto(self, id_estoque: int, id_categoria: int, nome: str, quantidade: int, preco_compra: float) -> int:
         cursor = self.connection.cursor()
-
         try:
             cursor.execute('INSERT INTO produto (id_estoque, id_categoria, nome, quantidade, preco_compra) VALUES (?, ?, ?, ?, ?)', (id_estoque, id_categoria, nome, quantidade, preco_compra))
         except sqlite3.Error as e:
