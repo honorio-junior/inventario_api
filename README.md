@@ -18,8 +18,8 @@ Uma API para gerenciar categorias, estoques e produtos em python, usando FastAPI
 - Apagar estoque
 - Apagar produtos de um estoque específico
 - Apagar categoria
-- ~~Atualizar produto~~
-- ~~Atualizar categoria~~
+- Atualizar produto
+- Atualizar categoria
 
 ## Iniciando a API
 

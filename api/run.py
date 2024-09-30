@@ -66,3 +66,15 @@ def delete_produto(id: int):
     db = DatabaseAPI()
     result = db.delete_produto(id)
     return result
+
+@app.put('/update-categoria/')
+def update_categoria(categoria: EsquemaCategoria):
+    db = DatabaseAPI()
+    result = db.update_categoria(categoria)
+    return result
+
+@app.put('/update-produto/')
+def update_produto(produto: EsquemaProduto):
+    db = DatabaseAPI()
+    result = db.update_produto(produto)
+    return result
