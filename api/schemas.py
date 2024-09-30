@@ -2,15 +2,15 @@ from typing import Optional
 from pydantic import BaseModel
 from datetime import date
 
-class EsquemaCategoria(BaseModel):
+class SchemaCategoria(BaseModel):
     id: Optional[int] = None
     nome: str
 
-class EsquemaEstoque(BaseModel):
+class SchemaEstoque(BaseModel):
     id: Optional[int] = None
     data: date
 
-class EsquemaProduto(BaseModel):
+class SchemaProduto(BaseModel):
     id: Optional[int] = None
     id_estoque: int
     id_categoria: int

@@ -1,7 +1,7 @@
 import sqlite3
 import pathlib
 from typing import List, Dict
-from schemas import EsquemaCategoria, EsquemaProduto
+from schemas import SchemaCategoria, SchemaProduto
 
 DATABASE = pathlib.Path(__file__).parent / 'database.sqlite'
 
@@ -98,7 +98,7 @@ class DatabaseAPI:
         self.close_connection()
         return True
     
-    def update_categoria(self, categoria: EsquemaCategoria) -> int:
+    def update_categoria(self, categoria: SchemaCategoria) -> int:
         cursor = self.connection.cursor()
         try:
             result = cursor.execute('UPDATE categoria SET nome = ? WHERE id = ?', (categoria.nome, categoria.id)).rowcount
@@ -109,7 +109,7 @@ class DatabaseAPI:
         self.close_connection()
         return result
     
-    def update_produto(self, produto: EsquemaProduto) -> int:
+    def update_produto(self, produto: SchemaProduto) -> int:
         cursor = self.connection.cursor()
         try:
             result = cursor.execute('UPDATE produto SET id_estoque = ?, id_categoria = ?, nome = ?, quantidade = ?, preco_compra = ? WHERE id = ?', (produto.id_estoque, produto.id_categoria, produto.nome, produto.quantidade, produto.preco_compra, produto.id)).rowcount
