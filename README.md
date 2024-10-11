@@ -41,12 +41,8 @@ Uma API para gerenciar categorias, estoques e produtos em python, usando FastAPI
     ```bash
     pip install -r requirements.txt
     ```
-4. Configuração do banco de dados:
 
-    ```bash
-    python .\api\database.py
-    ```
-5. Executando a API:
+4. Executando a API:
 
     ```bash
     fastapi dev .\api\run.py
