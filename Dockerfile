@@ -1,11 +1,9 @@
-FROM python:3
+FROM python:3.12
 
 WORKDIR /app
 
-COPY api/ .
-COPY requirements.txt .
+COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
-RUN python database.py
 
-CMD ["fastapi", "dev", "run.py", "--host", "0.0.0.0"]
+CMD ["fastapi", "dev", "./api/run.py", "--host", "0.0.0.0"]
