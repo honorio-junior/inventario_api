@@ -7,9 +7,40 @@ DATABASE = pathlib.Path(__file__).parent / 'database.sqlite'
 
 class DatabaseAPI:
     def __init__(self):
+        self.create_db()
         self.connection = sqlite3.connect(DATABASE)
         self.connection.row_factory = sqlite3.Row
         self.connection.execute('PRAGMA foreign_keys = ON')
+
+    def create_db(self):
+        query = """
+        CREATE TABLE IF NOT EXISTS estoque (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            data DATE NOT NULL UNIQUE
+        );
+        CREATE TABLE IF NOT EXISTS categoria (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL UNIQUE
+        );
+        CREATE TABLE IF NOT EXISTS produto (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_estoque INTEGER NOT NULL,
+            id_categoria INTEGER NOT NULL,
+            nome TEXT NOT NULL,
+            quantidade INTEGER NOT NULL,
+            preco_compra REAL NOT NULL,
+            FOREIGN KEY(id_estoque) REFERENCES estoque(id) ON DELETE RESTRICT,
+            FOREIGN KEY(id_categoria) REFERENCES categoria(id) ON DELETE RESTRICT
+        )
+        """
+        try:
+            with sqlite3.connect(DATABASE) as connection:
+                cursor = connection.cursor()
+                cursor.executescript(query)
+                connection.commit()
+                print("Banco de dados criado com sucesso")
+        except sqlite3.Error as e:
+            print(f"Erro ao criar o banco de dados: {e}")
 
     def close_connection(self):
         self.connection.close()
@@ -119,37 +150,4 @@ class DatabaseAPI:
         self.connection.commit()
         self.close_connection()
         return result
-
-
-if __name__ == '__main__':
-
-    query = """
-CREATE TABLE IF NOT EXISTS estoque (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    data DATE NOT NULL UNIQUE
-);
-CREATE TABLE IF NOT EXISTS categoria (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT NOT NULL UNIQUE
-);
-CREATE TABLE IF NOT EXISTS produto (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_estoque INTEGER NOT NULL,
-    id_categoria INTEGER NOT NULL,
-    nome TEXT NOT NULL,
-    quantidade INTEGER NOT NULL,
-    preco_compra REAL NOT NULL,
-    FOREIGN KEY(id_estoque) REFERENCES estoque(id) ON DELETE RESTRICT,
-    FOREIGN KEY(id_categoria) REFERENCES categoria(id) ON DELETE RESTRICT
-)
-"""
-    try:
-        connection = sqlite3.connect(DATABASE)
-        cursor = connection.cursor()
-        cursor.executescript(query)
-        connection.commit()
-        connection.close()
-        print("Banco de dados criadas com sucesso")
-    except sqlite3.Error as e:
-        print(f"Database error: {e}")
 
