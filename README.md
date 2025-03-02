@@ -3,6 +3,7 @@
 Uma API para gerenciar categorias, estoques e produtos em python, usando FastAPI e SQLite3.
 
 ![FastAPI Swagger](https://i.imgur.com/oekkSUN.png)
+![Route create product](https://i.imgur.com/usjWZaD.png)
 
 > localhost:8000/docs
 
